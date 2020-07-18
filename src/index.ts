@@ -17,10 +17,10 @@ const start = async () => {
       { useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false, useCreateIndex: true }
     );
     console.log('Connected to MongoDB');
-    server.listen(3000).then(({ url }: { url: string }) => console.log(`🚀 Server ready at ${url}`));
   } catch (e) {
     console.error(e);
   }
+  server.listen(3000).then(({ url }: { url: string }) => console.log(`🚀 Server ready at ${url}`));
 };
 
 start();
