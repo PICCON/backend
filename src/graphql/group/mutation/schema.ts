@@ -1,13 +1,11 @@
 import { gql } from 'apollo-server';
 
 export default gql`
-  type Group {
-    id: ID!
-    name: String!
-  }
-
   type Mutation {
-    group(id: ID!): Group
-    groups: [Group!]!
+    groupCreate(name: String!): Boolean
+    groupInvite(groupId: ID!, userIds: [ID!]!, message: String): Group
+    groupLeave(groupId: ID!): Boolean
+    groupKickUser(groupId: ID!, userId: ID!): Boolean
+    groupSetDefault(groupId: ID!): Boolean
   }
 `;

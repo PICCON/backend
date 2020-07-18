@@ -2,18 +2,14 @@ import mongoose, { Schema, model, Types } from 'mongoose';
 
 interface GroupAttrs {
   name: string;
-  creator: {
-    userId: string;
-    name: string;
-  };
+  creatorId: string;
+  creatorNme: string;
 }
 
 interface GroupDoc extends mongoose.Document {
   name: string;
-  creator: {
-    userId: string;
-    name: string;
-  };
+  creatorId: string;
+  creatorNme: string;
   isArchived: boolean;
   members: {
     userId: string;
@@ -37,10 +33,8 @@ enum MemberType {
 const GroupSchema = new Schema(
   {
     name: { type: String, required: true },
-    creator: {
-      userId: { type: Types.ObjectId, ref: 'user', required: true },
-      name: { type: String, required: true }
-    },
+    creatorId: { type: Types.ObjectId, ref: 'user', required: true },
+    creatorNme: { type: String, required: true },
     isArchived: { type: Boolean, required: true, default: false },
     members: [
       {

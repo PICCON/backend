@@ -1,5 +1,4 @@
 import { server } from './server';
-import './models';
 import mongoose from 'mongoose';
 
 const start = async () => {
