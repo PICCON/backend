@@ -1,0 +1,22 @@
+apiVersion: skaffold/v2alpha3
+kind: Config
+build:
+  local:
+    push: false
+  artifacts:
+    - image: piconn/backend
+      context: .
+      docker:
+        dockerfile: Dockerfile.dev
+      sync:
+        manual:
+          - src: "src/**/*.js"
+            dest: .
+          - src: "src/**/*.ts"
+            dest: .
+
+deploy:
+  kubectl:
+    manifests:
+      - ./k8s/backend-depl.yaml
+      - ./k8s/ingress-service-dev.yaml
