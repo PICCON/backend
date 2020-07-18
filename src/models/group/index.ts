@@ -1,13 +1,8 @@
-import mongoose, { Schema, model, Types, isValidObjectId } from 'mongoose';
+import mongoose, { Schema, model, Types } from 'mongoose';
+import { MessageSchema } from '../message';
+interface GroupAttrs {}
 
-interface GroupAttrs {
-  name: string;
-}
-
-interface GroupDoc extends mongoose.Document {
-  id: string;
-  name: string;
-}
+interface GroupDoc extends mongoose.Document {}
 
 interface GroupModel extends mongoose.Model<GroupDoc> {
   build(attrs: GroupAttrs): GroupDoc;
@@ -25,6 +20,7 @@ const GroupSchema = new Schema(
       userId: { type: Types.ObjectId, ref: 'user', required: true },
       name: { type: String, required: true }
     },
+    isArchived: { type: Boolean, required: true, default: false },
     members: [
       {
         userId: { type: Types.ObjectId, ref: 'user', required: true },
@@ -34,14 +30,7 @@ const GroupSchema = new Schema(
         unreadMessageCount: { type: Number, required: true, default: 0 }
       }
     ],
-    lastMessage: {
-      messageId: { type: Types.ObjectId, ref: 'message', required: true },
-      text: String,
-      images: [{ key: { type: String, required: true } }],
-      createdAt: { type: Date, required: true },
-      userId: { type: Types.ObjectId, ref: 'user', required: true },
-      userName: { type: String, ref: 'user', required: true }
-    }
+    lastMessage: MessageSchema
   },
   { timestamps: true }
 );
