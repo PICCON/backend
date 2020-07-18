@@ -6,7 +6,7 @@ export default gql`
     name: String!
   }
 
-  type Query {
+  type Mutation {
     group(id: ID!): Group
     groups: [Group!]!
   }

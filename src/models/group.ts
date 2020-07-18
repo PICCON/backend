@@ -1,8 +1,29 @@
 import mongoose, { Schema, model, Types } from 'mongoose';
-import { MessageSchema } from '../message';
-interface GroupAttrs {}
 
-interface GroupDoc extends mongoose.Document {}
+interface GroupAttrs {
+  name: string;
+  creator: {
+    userId: string;
+    name: string;
+  };
+}
+
+interface GroupDoc extends mongoose.Document {
+  name: string;
+  creator: {
+    userId: string;
+    name: string;
+  };
+  isArchived: boolean;
+  members: {
+    userId: string;
+    name: string;
+    joinedAt: Date;
+    type: MemberType;
+  }[];
+  createdAt: Date;
+  updatedAt: Date;
+}
 
 interface GroupModel extends mongoose.Model<GroupDoc> {
   build(attrs: GroupAttrs): GroupDoc;
@@ -26,11 +47,9 @@ const GroupSchema = new Schema(
         userId: { type: Types.ObjectId, ref: 'user', required: true },
         name: { type: String, required: true },
         joinedAt: { type: Date, required: true },
-        type: { type: String, enum: Object.values(MemberType) },
-        unreadMessageCount: { type: Number, required: true, default: 0 }
+        type: { type: String, enum: Object.values(MemberType) }
       }
-    ],
-    lastMessage: MessageSchema
+    ]
   },
   { timestamps: true }
 );
@@ -42,4 +61,6 @@ GroupSchema.pre('save', function(done) {
   done();
 });
 
-model<GroupDoc, GroupModel>('group', GroupSchema);
+GroupSchema.statics.build = (attrs: GroupAttrs) => new Group(attrs);
+
+export const Group = model<GroupDoc, GroupModel>('group', GroupSchema);

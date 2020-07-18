@@ -1,3 +1,3 @@
+import './user';
 import './group';
 import './message';
-import './user';
