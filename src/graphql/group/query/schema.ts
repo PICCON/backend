@@ -36,7 +36,7 @@ export default gql`
   }
 
   input GroupCriteria {
-    ids: [ID!]
+    groupIds: [ID!]
     creatorId: ID
     isArchived: Boolean
     membersIn: [ID!]

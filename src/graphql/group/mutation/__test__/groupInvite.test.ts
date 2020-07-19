@@ -117,3 +117,7 @@ it('fails when group is archived', async () => {});
 it('fails when group does not exist', async () => {});
 
 it('fails when a user is invited by a unauthorized member', async () => {});
+
+it('fails when trying to invite a user who has banned the requesting user.', async () => {});
+
+it('can invite a banned user as long as that user has not banned the requesting user. This user is now excluded from the banned list', async () => {});

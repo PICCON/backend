@@ -18,6 +18,7 @@ export interface UserDoc extends mongoose.Document {
     unreadMessageCount: number;
     lastMessage: MessageDoc;
   }[];
+  bannedUserIds: string[];
 }
 
 interface UserModel extends mongoose.Model<UserDoc> {
@@ -42,7 +43,8 @@ const UserSchema = new Schema(
         unreadMessageCount: { type: Number, required: true, default: 0 },
         lastMessage: MessageSchema
       }
-    ]
+    ],
+    bannedUserIds: [{ type: Types.ObjectId, required: true, ref: 'user' }]
   },
   { timestamps: true }
 );

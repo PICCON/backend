@@ -27,6 +27,11 @@ export type Mutation = {
   messageRemoveImage: Scalars['Boolean'];
   /** groupId를 제공하지 않을 경우 default로 설정된 group으로 메시지가 전송된다. */
   messageShare: Message;
+  userArchive: Scalars['Boolean'];
+  /** 해당 유저가 더 이상 나를 초대할 수 없도록 차단한다. */
+  userBan: Scalars['Boolean'];
+  userLoginKakao: UserTokenResponse;
+  userRegisterKakao: UserTokenResponse;
 };
 
 
@@ -75,6 +80,25 @@ export type MutationMessageShareArgs = {
   text?: Maybe<Scalars['String']>;
 };
 
+
+export type MutationUserBanArgs = {
+  userId: Scalars['ID'];
+};
+
+
+export type MutationUserLoginKakaoArgs = {
+  kakaoId: Scalars['String'];
+  kakaoAccessToken: Scalars['String'];
+};
+
+
+export type MutationUserRegisterKakaoArgs = {
+  kakaoId: Scalars['String'];
+  kakaoAccessToken: Scalars['String'];
+  name: Scalars['String'];
+  phone: Scalars['String'];
+};
+
 export type Group = {
   __typename?: 'Group';
   id: Scalars['ID'];
@@ -112,6 +136,8 @@ export type Query = {
   groups: Array<Group>;
   message?: Maybe<Message>;
   messages: Array<Message>;
+  user?: Maybe<User>;
+  users: Array<User>;
 };
 
 
@@ -140,8 +166,21 @@ export type QueryMessagesArgs = {
   limit?: Maybe<Scalars['Int']>;
 };
 
+
+export type QueryUserArgs = {
+  id: Scalars['ID'];
+};
+
+
+export type QueryUsersArgs = {
+  criteria?: Maybe<UserCriteria>;
+  sortProperty?: Maybe<UserSortProperty>;
+  offset?: Maybe<Scalars['Int']>;
+  limit?: Maybe<Scalars['Int']>;
+};
+
 export type GroupCriteria = {
-  ids?: Maybe<Array<Scalars['ID']>>;
+  groupIds?: Maybe<Array<Scalars['ID']>>;
   creatorId?: Maybe<Scalars['ID']>;
   isArchived?: Maybe<Scalars['Boolean']>;
   membersIn?: Maybe<Array<Scalars['ID']>>;
@@ -169,7 +208,7 @@ export type MessageImage = {
 };
 
 export type MessageCriteria = {
-  ids?: Maybe<Array<Scalars['ID']>>;
+  messageIds?: Maybe<Array<Scalars['ID']>>;
   userId?: Maybe<Scalars['ID']>;
   groupId?: Maybe<Scalars['ID']>;
   isArchived?: Maybe<Scalars['Boolean']>;
@@ -184,6 +223,55 @@ export enum MessageSortProperty {
   UpdatedAt = 'updatedAt',
   UserId = 'userId',
   GroupId = 'groupId'
+}
+
+export type UserTokenResponse = {
+  __typename?: 'UserTokenResponse';
+  accessToken: Scalars['String'];
+  refreshToken: Scalars['String'];
+  user: User;
+};
+
+/** 그룹에 생성되는 메시지 단위이다. 사진들은 메시지에 1:N 관계로 내장된다. */
+export type User = {
+  __typename?: 'User';
+  id: Scalars['ID'];
+  name: Scalars['String'];
+  registerType: RegisterType;
+  isArchived: Scalars['Boolean'];
+  authVersion: Scalars['Int'];
+  groups: Array<UserGroup>;
+  bannedUserIds: Array<Scalars['ID']>;
+  createdAt: Scalars['DateTime'];
+  updatedAt: Scalars['DateTime'];
+};
+
+export enum RegisterType {
+  Kakao = 'kakao',
+  Apple = 'apple'
+}
+
+export type UserGroup = {
+  __typename?: 'UserGroup';
+  groupId: Scalars['ID'];
+  unreadMessageCount: Scalars['Int'];
+  lastMessage: Message;
+};
+
+export type UserCriteria = {
+  userIds?: Maybe<Array<Scalars['ID']>>;
+  userId?: Maybe<Scalars['ID']>;
+  isArchived?: Maybe<Scalars['Boolean']>;
+  createdAtGte?: Maybe<Scalars['DateTime']>;
+  createdAtLte?: Maybe<Scalars['DateTime']>;
+  updatedAtGte?: Maybe<Scalars['DateTime']>;
+  updatedAtLte?: Maybe<Scalars['DateTime']>;
+};
+
+export enum UserSortProperty {
+  CreatedAt = 'createdAt',
+  UpdatedAt = 'updatedAt',
+  UserId = 'userId'
 }
 
 
@@ -281,6 +369,12 @@ export type ResolversTypes = {
   MessageImage: ResolverTypeWrapper<MessageImage>;
   MessageCriteria: MessageCriteria;
   MessageSortProperty: MessageSortProperty;
+  UserTokenResponse: ResolverTypeWrapper<UserTokenResponse>;
+  User: ResolverTypeWrapper<User>;
+  RegisterType: RegisterType;
+  UserGroup: ResolverTypeWrapper<UserGroup>;
+  UserCriteria: UserCriteria;
+  UserSortProperty: UserSortProperty;
 };
 
 /** Mapping between all available schema types and the resolvers parents */
@@ -299,6 +393,10 @@ export type ResolversParentTypes = {
   Message: Message;
   MessageImage: MessageImage;
   MessageCriteria: MessageCriteria;
+  UserTokenResponse: UserTokenResponse;
+  User: User;
+  UserGroup: UserGroup;
+  UserCriteria: UserCriteria;
 };
 
 export interface DateScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['Date'], any> {
@@ -318,6 +416,10 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   messageRemove?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationMessageRemoveArgs, 'messageId'>>;
   messageRemoveImage?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationMessageRemoveImageArgs, 'messageId' | 'imageId'>>;
   messageShare?: Resolver<ResolversTypes['Message'], ParentType, ContextType, RequireFields<MutationMessageShareArgs, 'imageKeys'>>;
+  userArchive?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  userBan?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationUserBanArgs, 'userId'>>;
+  userLoginKakao?: Resolver<ResolversTypes['UserTokenResponse'], ParentType, ContextType, RequireFields<MutationUserLoginKakaoArgs, 'kakaoId' | 'kakaoAccessToken'>>;
+  userRegisterKakao?: Resolver<ResolversTypes['UserTokenResponse'], ParentType, ContextType, RequireFields<MutationUserRegisterKakaoArgs, 'kakaoId' | 'kakaoAccessToken' | 'name' | 'phone'>>;
 };
 
 export type GroupResolvers<ContextType = any, ParentType extends ResolversParentTypes['Group'] = ResolversParentTypes['Group']> = {
@@ -345,6 +447,8 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   groups?: Resolver<Array<ResolversTypes['Group']>, ParentType, ContextType, RequireFields<QueryGroupsArgs, never>>;
   message?: Resolver<Maybe<ResolversTypes['Message']>, ParentType, ContextType, RequireFields<QueryMessageArgs, 'id'>>;
   messages?: Resolver<Array<ResolversTypes['Message']>, ParentType, ContextType, RequireFields<QueryMessagesArgs, never>>;
+  user?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<QueryUserArgs, 'id'>>;
+  users?: Resolver<Array<ResolversTypes['User']>, ParentType, ContextType, RequireFields<QueryUsersArgs, never>>;
 };
 
 export type MessageResolvers<ContextType = any, ParentType extends ResolversParentTypes['Message'] = ResolversParentTypes['Message']> = {
@@ -367,6 +471,33 @@ export type MessageImageResolvers<ContextType = any, ParentType extends Resolver
   __isTypeOf?: IsTypeOfResolverFn<ParentType>;
 };
 
+export type UserTokenResponseResolvers<ContextType = any, ParentType extends ResolversParentTypes['UserTokenResponse'] = ResolversParentTypes['UserTokenResponse']> = {
+  accessToken?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  refreshToken?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  user?: Resolver<ResolversTypes['User'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType>;
+};
+
+export type UserResolvers<ContextType = any, ParentType extends ResolversParentTypes['User'] = ResolversParentTypes['User']> = {
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  registerType?: Resolver<ResolversTypes['RegisterType'], ParentType, ContextType>;
+  isArchived?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  authVersion?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  groups?: Resolver<Array<ResolversTypes['UserGroup']>, ParentType, ContextType>;
+  bannedUserIds?: Resolver<Array<ResolversTypes['ID']>, ParentType, ContextType>;
+  createdAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
+  updatedAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType>;
+};
+
+export type UserGroupResolvers<ContextType = any, ParentType extends ResolversParentTypes['UserGroup'] = ResolversParentTypes['UserGroup']> = {
+  groupId?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  unreadMessageCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  lastMessage?: Resolver<ResolversTypes['Message'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType>;
+};
+
 export type Resolvers<ContextType = any> = {
   Date?: GraphQLScalarType;
   DateTime?: GraphQLScalarType;
@@ -376,6 +507,9 @@ export type Resolvers<ContextType = any> = {
   Query?: QueryResolvers<ContextType>;
   Message?: MessageResolvers<ContextType>;
   MessageImage?: MessageImageResolvers<ContextType>;
+  UserTokenResponse?: UserTokenResponseResolvers<ContextType>;
+  User?: UserResolvers<ContextType>;
+  UserGroup?: UserGroupResolvers<ContextType>;
 };
 
 

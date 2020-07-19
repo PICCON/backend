@@ -4,33 +4,37 @@ export default gql`
   """
   그룹에 생성되는 메시지 단위이다. 사진들은 메시지에 1:N 관계로 내장된다.
   """
-  type Message {
+  type User {
     id: ID!
-    groupId: ID!
-    text: String
+    name: String!
+    registerType: RegisterType!
     isArchived: Boolean!
-    images: [MessageImage!]!
-    userId: ID!
-    userName: String!
+    authVersion: Int!
+    groups: [UserGroup!]!
+    bannedUserIds: [ID!]!
     createdAt: DateTime!
     updatedAt: DateTime!
   }
 
-  type MessageImage {
-    key: String!
-    location: String
-    createdAt: DateTime
+  enum RegisterType {
+    kakao
+    apple
+  }
+
+  type UserGroup {
+    groupId: ID!
+    unreadMessageCount: Int!
+    lastMessage: Message!
   }
 
   extend type Query {
-    message(id: ID!): Message
-    messages(criteria: MessageCriteria, sortProperty: MessageSortProperty, offset: Int, limit: Int): [Message!]!
+    user(id: ID!): User
+    users(criteria: UserCriteria, sortProperty: UserSortProperty, offset: Int, limit: Int): [User!]!
   }
 
-  input MessageCriteria {
-    messageIds: [ID!]
+  input UserCriteria {
+    userIds: [ID!]
     userId: ID
-    groupId: ID
     isArchived: Boolean
     createdAtGte: DateTime
     createdAtLte: DateTime
@@ -38,10 +42,9 @@ export default gql`
     updatedAtLte: DateTime
   }
 
-  enum MessageSortProperty {
+  enum UserSortProperty {
     createdAt
     updatedAt
     userId
-    groupId
   }
 `;

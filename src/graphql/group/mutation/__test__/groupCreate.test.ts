@@ -23,6 +23,7 @@ it('creates a group', async () => {
   let group = groups[0];
   expect(group.name).toBe('spacex');
   expect(group.creatorId).toBe(user.id);
+  expect(group.creatorName).toBe(user.name);
   expect(group.isArchived).toBeFalsy();
   expect(group.members.length).toBe(1);
   let member = group.members[0];
