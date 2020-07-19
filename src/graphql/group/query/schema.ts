@@ -5,7 +5,6 @@ export default gql`
     id: ID!
     name: String!
     creatorId: String!
-    creatorNme: String!
     isArchived: Boolean!
     members: [GroupMember!]!
     createdAt: Date!

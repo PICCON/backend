@@ -24,7 +24,7 @@ interface UserModel extends mongoose.Model<UserDoc> {
   build(attrs: UserAttrs): UserDoc;
 }
 
-enum RegisterType {
+export enum RegisterType {
   Kakao = 'kakao',
   Apple = 'apple'
 }
@@ -56,4 +56,4 @@ UserSchema.pre('save', function(done) {
 
 UserSchema.statics.build = (attrs: UserAttrs) => new User(attrs);
 
-export const User = model<UserDoc, UserModel>('group', UserSchema);
+export const User = model<UserDoc, UserModel>('useer', UserSchema);

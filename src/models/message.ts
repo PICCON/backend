@@ -48,4 +48,4 @@ MessageSchema.statics.build = async (attrs: MessageAttrs) => {
   return new Message({ ...attrs, userName: user.name });
 };
 
-export const Message = model<MessageDoc, MessageModel>('group', MessageSchema);
+export const Message = model<MessageDoc, MessageModel>('message', MessageSchema);

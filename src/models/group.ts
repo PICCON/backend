@@ -3,13 +3,11 @@ import mongoose, { Schema, model, Types } from 'mongoose';
 interface GroupAttrs {
   name: string;
   creatorId: string;
-  creatorNme: string;
 }
 
 interface GroupDoc extends mongoose.Document {
   name: string;
   creatorId: string;
-  creatorNme: string;
   isArchived: boolean;
   members: {
     userId: string;
@@ -34,7 +32,6 @@ const GroupSchema = new Schema(
   {
     name: { type: String, required: true },
     creatorId: { type: Types.ObjectId, ref: 'user', required: true },
-    creatorNme: { type: String, required: true },
     isArchived: { type: Boolean, required: true, default: false },
     members: [
       {

@@ -1,11 +1,12 @@
 import { MongoMemoryServer } from 'mongodb-memory-server';
 import mongoose from 'mongoose';
 import jwt from 'jsonwebtoken';
+import { User, RegisterType, UserDoc } from '../models/user';
 
 declare global {
   namespace NodeJS {
     interface Global {
-      signin(): { accessToken: string; userId: string };
+      signin(): Promise<{ accessToken: string; user: UserDoc }>;
     }
   }
 }
@@ -38,8 +39,8 @@ afterAll(async () => {
   await mongoose.connection.close();
 });
 
-global.signin = () => {
-  let userId = mongoose.Types.ObjectId().toHexString();
-  const payload = { userId, name: 'elon' };
-  return { accessToken: jwt.sign(payload, process.env.JWT_KEY!), userId };
+global.signin = async () => {
+  let user = await User.build({ name: 'Nikola Tesla', phone: '0101111222', registerType: RegisterType.Apple });
+  const payload = { userId: user.id, name: user.name };
+  return { accessToken: jwt.sign(payload, process.env.JWT_KEY!), user };
 };
