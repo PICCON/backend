@@ -1,8 +1,7 @@
 import { GraphQLResolveInfo, GraphQLScalarType, GraphQLScalarTypeConfig } from 'graphql';
 export type Maybe<T> = T | null;
 export type Exact<T extends { [key: string]: any }> = { [K in keyof T]: T[K] };
-export type RequireFields<T, K extends keyof T> = { [X in Exclude<keyof T, K>]?: T[X] } &
-  { [P in K]-?: NonNullable<T[P]> };
+export type RequireFields<T, K extends keyof T> = { [X in Exclude<keyof T, K>]?: T[X] } & { [P in K]-?: NonNullable<T[P]> };
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
   ID: string;
@@ -14,6 +13,8 @@ export type Scalars = {
   DateTime: any;
 };
 
+
+
 export type Mutation = {
   __typename?: 'Mutation';
   groupCreate?: Maybe<Scalars['Boolean']>;
@@ -23,9 +24,11 @@ export type Mutation = {
   groupSetDefault?: Maybe<Scalars['Boolean']>;
 };
 
+
 export type MutationGroupCreateArgs = {
   name: Scalars['String'];
 };
+
 
 export type MutationGroupInviteArgs = {
   groupId: Scalars['ID'];
@@ -33,14 +36,17 @@ export type MutationGroupInviteArgs = {
   message?: Maybe<Scalars['String']>;
 };
 
+
 export type MutationGroupLeaveArgs = {
   groupId: Scalars['ID'];
 };
+
 
 export type MutationGroupKickUserArgs = {
   groupId: Scalars['ID'];
   userId: Scalars['ID'];
 };
+
 
 export type MutationGroupSetDefaultArgs = {
   groupId: Scalars['ID'];
@@ -83,9 +89,11 @@ export type Query = {
   groups: Array<Group>;
 };
 
+
 export type QueryGroupArgs = {
   id: Scalars['ID'];
 };
+
 
 export type QueryGroupsArgs = {
   criteria?: Maybe<GroupCriteria>;
@@ -101,7 +109,10 @@ export type GroupCriteria = {
   membersIn?: Maybe<Array<Scalars['ID']>>;
 };
 
+
+
 export type ResolverTypeWrapper<T> = Promise<T> | T;
+
 
 export type LegacyStitchingResolver<TResult, TParent, TContext, TArgs> = {
   fragment: string;
@@ -112,9 +123,7 @@ export type NewStitchingResolver<TResult, TParent, TContext, TArgs> = {
   selectionSet: string;
   resolve: ResolverFn<TResult, TParent, TContext, TArgs>;
 };
-export type StitchingResolver<TResult, TParent, TContext, TArgs> =
-  | LegacyStitchingResolver<TResult, TParent, TContext, TArgs>
-  | NewStitchingResolver<TResult, TParent, TContext, TArgs>;
+export type StitchingResolver<TResult, TParent, TContext, TArgs> = LegacyStitchingResolver<TResult, TParent, TContext, TArgs> | NewStitchingResolver<TResult, TParent, TContext, TArgs>;
 export type Resolver<TResult, TParent = {}, TContext = {}, TArgs = {}> =
   | ResolverFn<TResult, TParent, TContext, TArgs>
   | StitchingResolver<TResult, TParent, TContext, TArgs>;
@@ -216,46 +225,15 @@ export interface DateTimeScalarConfig extends GraphQLScalarTypeConfig<ResolversT
   name: 'DateTime';
 }
 
-export type MutationResolvers<
-  ContextType = any,
-  ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']
-> = {
-  groupCreate?: Resolver<
-    Maybe<ResolversTypes['Boolean']>,
-    ParentType,
-    ContextType,
-    RequireFields<MutationGroupCreateArgs, 'name'>
-  >;
-  groupInvite?: Resolver<
-    Maybe<ResolversTypes['Group']>,
-    ParentType,
-    ContextType,
-    RequireFields<MutationGroupInviteArgs, 'groupId' | 'userIds'>
-  >;
-  groupLeave?: Resolver<
-    Maybe<ResolversTypes['Boolean']>,
-    ParentType,
-    ContextType,
-    RequireFields<MutationGroupLeaveArgs, 'groupId'>
-  >;
-  groupKickUser?: Resolver<
-    Maybe<ResolversTypes['Boolean']>,
-    ParentType,
-    ContextType,
-    RequireFields<MutationGroupKickUserArgs, 'groupId' | 'userId'>
-  >;
-  groupSetDefault?: Resolver<
-    Maybe<ResolversTypes['Boolean']>,
-    ParentType,
-    ContextType,
-    RequireFields<MutationGroupSetDefaultArgs, 'groupId'>
-  >;
+export type MutationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
+  groupCreate?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, RequireFields<MutationGroupCreateArgs, 'name'>>;
+  groupInvite?: Resolver<Maybe<ResolversTypes['Group']>, ParentType, ContextType, RequireFields<MutationGroupInviteArgs, 'groupId' | 'userIds'>>;
+  groupLeave?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, RequireFields<MutationGroupLeaveArgs, 'groupId'>>;
+  groupKickUser?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, RequireFields<MutationGroupKickUserArgs, 'groupId' | 'userId'>>;
+  groupSetDefault?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, RequireFields<MutationGroupSetDefaultArgs, 'groupId'>>;
 };
 
-export type GroupResolvers<
-  ContextType = any,
-  ParentType extends ResolversParentTypes['Group'] = ResolversParentTypes['Group']
-> = {
+export type GroupResolvers<ContextType = any, ParentType extends ResolversParentTypes['Group'] = ResolversParentTypes['Group']> = {
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   creatorId?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -267,10 +245,7 @@ export type GroupResolvers<
   __isTypeOf?: IsTypeOfResolverFn<ParentType>;
 };
 
-export type GroupMemberResolvers<
-  ContextType = any,
-  ParentType extends ResolversParentTypes['GroupMember'] = ResolversParentTypes['GroupMember']
-> = {
+export type GroupMemberResolvers<ContextType = any, ParentType extends ResolversParentTypes['GroupMember'] = ResolversParentTypes['GroupMember']> = {
   userId?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   joinedAt?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
@@ -278,10 +253,7 @@ export type GroupMemberResolvers<
   __isTypeOf?: IsTypeOfResolverFn<ParentType>;
 };
 
-export type QueryResolvers<
-  ContextType = any,
-  ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']
-> = {
+export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
   group?: Resolver<Maybe<ResolversTypes['Group']>, ParentType, ContextType, RequireFields<QueryGroupArgs, 'id'>>;
   groups?: Resolver<Array<ResolversTypes['Group']>, ParentType, ContextType, RequireFields<QueryGroupsArgs, never>>;
 };
@@ -294,6 +266,7 @@ export type Resolvers<ContextType = any> = {
   GroupMember?: GroupMemberResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
 };
+
 
 /**
  * @deprecated

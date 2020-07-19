@@ -19,7 +19,9 @@ const start = async () => {
   } catch (e) {
     console.error(e);
   }
-  server.listen(3000).then(({ url }: { url: string }) => console.log(`🚀 Server ready at ${url}`));
+  server()
+    .listen(3000)
+    .then(({ url }: { url: string }) => console.log(`🚀 Server ready at ${url}`));
 };
 
 start();
