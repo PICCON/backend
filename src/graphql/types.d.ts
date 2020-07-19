@@ -19,9 +19,14 @@ export type Mutation = {
   __typename?: 'Mutation';
   groupCreate?: Maybe<Scalars['Boolean']>;
   groupInvite?: Maybe<Group>;
-  groupLeave?: Maybe<Scalars['Boolean']>;
   groupKickUser?: Maybe<Scalars['Boolean']>;
+  groupLeave?: Maybe<Scalars['Boolean']>;
+  /** 기본 그룹으로 설정한다. 기존에 기본으로 설정되어 있던 그룹은 기본에서 해제된다(isDefault:false). */
   groupSetDefault?: Maybe<Scalars['Boolean']>;
+  messageRemove: Scalars['Boolean'];
+  messageRemoveImage: Scalars['Boolean'];
+  /** groupId를 제공하지 않을 경우 default로 설정된 group으로 메시지가 전송된다. */
+  messageShare: Message;
 };
 
 
@@ -37,14 +42,14 @@ export type MutationGroupInviteArgs = {
 };
 
 
-export type MutationGroupLeaveArgs = {
-  groupId: Scalars['ID'];
-};
-
-
 export type MutationGroupKickUserArgs = {
   groupId: Scalars['ID'];
   userId: Scalars['ID'];
+};
+
+
+export type MutationGroupLeaveArgs = {
+  groupId: Scalars['ID'];
 };
 
 
@@ -52,12 +57,30 @@ export type MutationGroupSetDefaultArgs = {
   groupId: Scalars['ID'];
 };
 
+
+export type MutationMessageRemoveArgs = {
+  messageId: Scalars['ID'];
+};
+
+
+export type MutationMessageRemoveImageArgs = {
+  messageId: Scalars['ID'];
+  imageId: Scalars['ID'];
+};
+
+
+export type MutationMessageShareArgs = {
+  groupId?: Maybe<Scalars['ID']>;
+  imageKeys: Array<Scalars['ID']>;
+  text?: Maybe<Scalars['String']>;
+};
+
 export type Group = {
   __typename?: 'Group';
   id: Scalars['ID'];
   name: Scalars['String'];
   creatorId: Scalars['String'];
-  creatorNme: Scalars['String'];
+  creatorName: Scalars['String'];
   isArchived: Scalars['Boolean'];
   members: Array<GroupMember>;
   createdAt: Scalars['Date'];
@@ -87,6 +110,8 @@ export type Query = {
   __typename?: 'Query';
   group?: Maybe<Group>;
   groups: Array<Group>;
+  message?: Maybe<Message>;
+  messages: Array<Message>;
 };
 
 
@@ -102,12 +127,64 @@ export type QueryGroupsArgs = {
   limit?: Maybe<Scalars['Int']>;
 };
 
+
+export type QueryMessageArgs = {
+  id: Scalars['ID'];
+};
+
+
+export type QueryMessagesArgs = {
+  criteria?: Maybe<MessageCriteria>;
+  sortProperty?: Maybe<MessageSortProperty>;
+  offset?: Maybe<Scalars['Int']>;
+  limit?: Maybe<Scalars['Int']>;
+};
+
 export type GroupCriteria = {
   ids?: Maybe<Array<Scalars['ID']>>;
   creatorId?: Maybe<Scalars['ID']>;
   isArchived?: Maybe<Scalars['Boolean']>;
   membersIn?: Maybe<Array<Scalars['ID']>>;
 };
+
+/** 그룹에 생성되는 메시지 단위이다. 사진들은 메시지에 1:N 관계로 내장된다. */
+export type Message = {
+  __typename?: 'Message';
+  id: Scalars['ID'];
+  groupId: Scalars['ID'];
+  text?: Maybe<Scalars['String']>;
+  isArchived: Scalars['Boolean'];
+  images: Array<MessageImage>;
+  userId: Scalars['ID'];
+  userName: Scalars['String'];
+  createdAt: Scalars['DateTime'];
+  updatedAt: Scalars['DateTime'];
+};
+
+export type MessageImage = {
+  __typename?: 'MessageImage';
+  key: Scalars['String'];
+  location?: Maybe<Scalars['String']>;
+  createdAt?: Maybe<Scalars['DateTime']>;
+};
+
+export type MessageCriteria = {
+  ids?: Maybe<Array<Scalars['ID']>>;
+  userId?: Maybe<Scalars['ID']>;
+  groupId?: Maybe<Scalars['ID']>;
+  isArchived?: Maybe<Scalars['Boolean']>;
+  createdAtGte?: Maybe<Scalars['DateTime']>;
+  createdAtLte?: Maybe<Scalars['DateTime']>;
+  updatedAtGte?: Maybe<Scalars['DateTime']>;
+  updatedAtLte?: Maybe<Scalars['DateTime']>;
+};
+
+export enum MessageSortProperty {
+  CreatedAt = 'createdAt',
+  UpdatedAt = 'updatedAt',
+  UserId = 'userId',
+  GroupId = 'groupId'
+}
 
 
 
@@ -200,6 +277,10 @@ export type ResolversTypes = {
   Query: ResolverTypeWrapper<{}>;
   Int: ResolverTypeWrapper<Scalars['Int']>;
   GroupCriteria: GroupCriteria;
+  Message: ResolverTypeWrapper<Message>;
+  MessageImage: ResolverTypeWrapper<MessageImage>;
+  MessageCriteria: MessageCriteria;
+  MessageSortProperty: MessageSortProperty;
 };
 
 /** Mapping between all available schema types and the resolvers parents */
@@ -215,6 +296,9 @@ export type ResolversParentTypes = {
   Query: {};
   Int: Scalars['Int'];
   GroupCriteria: GroupCriteria;
+  Message: Message;
+  MessageImage: MessageImage;
+  MessageCriteria: MessageCriteria;
 };
 
 export interface DateScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['Date'], any> {
@@ -228,16 +312,19 @@ export interface DateTimeScalarConfig extends GraphQLScalarTypeConfig<ResolversT
 export type MutationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
   groupCreate?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, RequireFields<MutationGroupCreateArgs, 'name'>>;
   groupInvite?: Resolver<Maybe<ResolversTypes['Group']>, ParentType, ContextType, RequireFields<MutationGroupInviteArgs, 'groupId' | 'userIds'>>;
-  groupLeave?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, RequireFields<MutationGroupLeaveArgs, 'groupId'>>;
   groupKickUser?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, RequireFields<MutationGroupKickUserArgs, 'groupId' | 'userId'>>;
+  groupLeave?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, RequireFields<MutationGroupLeaveArgs, 'groupId'>>;
   groupSetDefault?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, RequireFields<MutationGroupSetDefaultArgs, 'groupId'>>;
+  messageRemove?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationMessageRemoveArgs, 'messageId'>>;
+  messageRemoveImage?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationMessageRemoveImageArgs, 'messageId' | 'imageId'>>;
+  messageShare?: Resolver<ResolversTypes['Message'], ParentType, ContextType, RequireFields<MutationMessageShareArgs, 'imageKeys'>>;
 };
 
 export type GroupResolvers<ContextType = any, ParentType extends ResolversParentTypes['Group'] = ResolversParentTypes['Group']> = {
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   creatorId?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  creatorNme?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  creatorName?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   isArchived?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   members?: Resolver<Array<ResolversTypes['GroupMember']>, ParentType, ContextType>;
   createdAt?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
@@ -256,6 +343,28 @@ export type GroupMemberResolvers<ContextType = any, ParentType extends Resolvers
 export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
   group?: Resolver<Maybe<ResolversTypes['Group']>, ParentType, ContextType, RequireFields<QueryGroupArgs, 'id'>>;
   groups?: Resolver<Array<ResolversTypes['Group']>, ParentType, ContextType, RequireFields<QueryGroupsArgs, never>>;
+  message?: Resolver<Maybe<ResolversTypes['Message']>, ParentType, ContextType, RequireFields<QueryMessageArgs, 'id'>>;
+  messages?: Resolver<Array<ResolversTypes['Message']>, ParentType, ContextType, RequireFields<QueryMessagesArgs, never>>;
+};
+
+export type MessageResolvers<ContextType = any, ParentType extends ResolversParentTypes['Message'] = ResolversParentTypes['Message']> = {
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  groupId?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  text?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  isArchived?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  images?: Resolver<Array<ResolversTypes['MessageImage']>, ParentType, ContextType>;
+  userId?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  userName?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  createdAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
+  updatedAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType>;
+};
+
+export type MessageImageResolvers<ContextType = any, ParentType extends ResolversParentTypes['MessageImage'] = ResolversParentTypes['MessageImage']> = {
+  key?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  location?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  createdAt?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType>;
 };
 
 export type Resolvers<ContextType = any> = {
@@ -265,6 +374,8 @@ export type Resolvers<ContextType = any> = {
   Group?: GroupResolvers<ContextType>;
   GroupMember?: GroupMemberResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
+  Message?: MessageResolvers<ContextType>;
+  MessageImage?: MessageImageResolvers<ContextType>;
 };
 
 
