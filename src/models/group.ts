@@ -19,6 +19,7 @@ interface GroupDoc extends mongoose.Document {
   }[];
   createdAt: Date;
   updatedAt: Date;
+  archive(): Promise<void>;
 }
 
 interface GroupModel extends mongoose.Model<GroupDoc> {

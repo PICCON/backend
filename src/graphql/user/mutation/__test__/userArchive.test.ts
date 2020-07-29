@@ -6,7 +6,7 @@ import { User, RegisterType } from '../../../../models/user';
 
 it('archives a user', async () => {});
 
-it('removes this archived user from all associated groups');
+it('removes this archived user from all associated groups', async () => {});
 
 it('fails if user is not logged in', async () => {});
 

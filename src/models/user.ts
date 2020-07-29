@@ -19,6 +19,8 @@ export interface UserDoc extends mongoose.Document {
     lastMessage: MessageDoc;
   }[];
   bannedUserIds: string[];
+  archive(): Promise<void>;
+  banUser(userId: string): Promise<void>;
 }
 
 interface UserModel extends mongoose.Model<UserDoc> {

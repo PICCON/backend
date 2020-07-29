@@ -3,15 +3,25 @@ import { createTestClient } from 'apollo-server-testing';
 import { gql } from 'apollo-server';
 import { Group } from '../../../../models/group';
 
-it('creates a group', async () => {
+export const CREATE_GROUP = gql`
+  mutation($name: String!) {
+    groupCreate(name: $name) {
+      id
+      name
+      creatorId
+      members {
+        userId
+        name
+        joinedAt
+        type
+      }
+    }
+  }
+`;
+
+it("creates a group and add this user to the new group's members list", async () => {
   const { accessToken, user } = await global.signin();
   const { mutate } = createTestClient(server({ accessToken }));
-
-  const CREATE_GROUP = gql`
-    mutation($name: String!) {
-      groupCreate(name: $name)
-    }
-  `;
 
   const { data, errors } = await mutate({ mutation: CREATE_GROUP, variables: { name: 'spacex' } });
 
@@ -35,12 +45,6 @@ it('creates a group', async () => {
 it('fails when valid accesstoken is not provided', async () => {
   const { mutate } = createTestClient(server({ accessToken: 'sadfsdf' }));
 
-  const CREATE_GROUP = gql`
-    mutation($name: String!) {
-      groupCreate(name: $name)
-    }
-  `;
-
   const { data, errors } = await mutate({ mutation: CREATE_GROUP, variables: { name: 'spacex' } });
 
   expect(errors).toBeDefined();
@@ -53,12 +57,6 @@ it('fails when valid accesstoken is not provided', async () => {
 it('fails when name of group is not provided', async () => {
   const { accessToken } = await global.signin();
   const { mutate } = createTestClient(server({ accessToken }));
-
-  const CREATE_GROUP = gql`
-    mutation($name: String!) {
-      groupCreate(name: $name)
-    }
-  `;
 
   const { data, errors } = await mutate({ mutation: CREATE_GROUP });
 

@@ -6,7 +6,7 @@ import { User, RegisterType, UserDoc } from '../models/user';
 declare global {
   namespace NodeJS {
     interface Global {
-      signin(): Promise<{ accessToken: string; user: UserDoc }>;
+      signin(userId?: string): Promise<{ accessToken: string; user: UserDoc }>;
     }
   }
 }
@@ -39,8 +39,11 @@ afterAll(async () => {
   await mongoose.connection.close();
 });
 
-global.signin = async () => {
-  let user = await User.build({ name: 'Nikola Tesla', phone: '0101111222', registerType: RegisterType.Apple });
+global.signin = async userId => {
+  let user = userId
+    ? await User.findById(userId)
+    : await User.build({ name: 'Nikola Tesla', phone: '0101111222', registerType: RegisterType.Apple }).save();
+  if (!user) throw new Error('테스트 오류');
   const payload = { userId: user.id, name: user.name };
-  return { accessToken: jwt.sign(payload, process.env.JWT_KEY!), user };
+  return { accessToken: jwt.sign(payload, 'JWT_KEY_FOR_TEST'), user };
 };

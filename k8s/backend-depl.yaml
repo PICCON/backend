@@ -47,6 +47,11 @@ spec:
                 secretKeyRef:
                   name: piconn-database-keys
                   key: MONGO_SHARD
+            - name: JWT_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: piconn-JWT
+                  key: JWT_KEY
 ---
 apiVersion: v1
 kind: Service

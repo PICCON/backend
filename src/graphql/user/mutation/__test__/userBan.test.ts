@@ -6,7 +6,7 @@ import { User, RegisterType } from '../../../../models/user';
 
 it('bans a user', async () => {});
 
-it('fails if user is not authenticated');
+it('fails if user is not authenticated', async () => {});
 
 it('fails if the userId for banning is invalid', async () => {});
 

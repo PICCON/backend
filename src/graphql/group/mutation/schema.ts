@@ -2,8 +2,8 @@ import { gql } from 'apollo-server';
 
 export default gql`
   type Mutation {
-    groupCreate(name: String!): Boolean
-    groupInvite(groupId: ID!, userIds: [ID!]!, message: String): Group
+    groupCreate(name: String!): Group
+    groupInvite(groupId: ID!, userIds: [ID!]!): Group
     groupLeave(groupId: ID!): Boolean
     groupKickUser(groupId: ID!, userId: ID!): Boolean
     """

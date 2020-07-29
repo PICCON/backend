@@ -23,7 +23,9 @@ export type Mutation = {
   groupLeave?: Maybe<Scalars['Boolean']>;
   /** 기본 그룹으로 설정한다. 기존에 기본으로 설정되어 있던 그룹은 기본에서 해제된다(isDefault:false). */
   groupSetDefault?: Maybe<Scalars['Boolean']>;
+  /** comming soon */
   messageRemove: Scalars['Boolean'];
+  /** comming soon */
   messageRemoveImage: Scalars['Boolean'];
   /** groupId를 제공하지 않을 경우 default로 설정된 group으로 메시지가 전송된다. */
   messageShare: Message;
@@ -43,7 +45,6 @@ export type MutationGroupCreateArgs = {
 export type MutationGroupInviteArgs = {
   groupId: Scalars['ID'];
   userIds: Array<Scalars['ID']>;
-  message?: Maybe<Scalars['String']>;
 };
 
 
